@@ -3,8 +3,7 @@ import config from "./config.json";
 
 import SlackActionWrapper from "./slackActionWrapper";
 import log4js from "log4js";
-import {ChannelGacha} from "./channelGacha";
-import {HighlightAdministrator} from "./HighlightAdministrator";
+import {HighlightAdministrator} from "./highlightAdministrator";
 
 export async function processBotRoutine() {
     const app: App = new App({
@@ -28,7 +27,7 @@ export async function processBotRoutine() {
         // if (messageEvent.subtype !== undefined && messageEvent.subtype === "message_changed") return;
         if (messageEvent.subtype === "bot_message") return;
         // if (messageEvent.channel !== config.targetChannel) return;
-        // console.log(messageEvent)
+         console.log(messageEvent)
         // channelGacha.postChannelInfoRandom(config.targetChannel);
     });
 

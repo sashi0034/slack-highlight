@@ -4,6 +4,8 @@ import {sleepSeconds} from "./util";
 import log4js from "log4js";
 
 interface ItemData {
+    ts: string,
+    channel: string,
     reactedUsers: string[]
 }
 
@@ -44,6 +46,8 @@ export class HighlightAdministrator {
         if (!this.currentData.has(key)) {
             // まだリアクションがついていないアイテムへリアクション
             this.currentData.set(key, {
+                ts: event.item.ts,
+                channel: event.item.channel,
                 reactedUsers: [user]
             })
         } else if (this.currentData.get(key)?.reactedUsers.indexOf(user) !== -1) {
