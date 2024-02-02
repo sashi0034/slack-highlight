@@ -27,13 +27,21 @@ export class HighlightAdministrator {
     }
 
     private async postHighlight() {
+        if (this.currentData.size === 0) return
+
+        // ソート
         log4js.getLogger().info(`Start sort ${this.currentData.size} messages`)
         const ranking: [string, ItemData][] = Array.from(this.currentData.entries());
         ranking.sort((a, b) => a[1].reactedUsers.length - b[1].reactedUsers.length)
 
+        // チャンネル情報取得
+        const channelList = await this.slackAction.fetchAllChannels()
+
         for (let i = 0; i < 10; ++i) {
             if (i >= ranking.length) break
-            await this.slackAction.postMessage(`https://kmc-jp.slack.com/archives/${ranking[i][0]}`)
+            const channel = channelList.find(c => c.id == ranking[i][1].channel)
+            if (channel === undefined) continue
+            await this.slackAction.postMessage(`<https://kmc-jp.slack.com/archives/${ranking[i][0]}|#${channel.name}>`)
         }
 
         this.currentData.clear()
@@ -50,7 +58,7 @@ export class HighlightAdministrator {
                 channel: event.item.channel,
                 reactedUsers: [user]
             })
-        } else if (this.currentData.get(key)?.reactedUsers.indexOf(user) !== -1) {
+        } else if (this.currentData.get(key)?.reactedUsers.indexOf(user) === -1) {
             // 既にリアクションがついたアイテムへ新しいユーザーがリアクション
             this.currentData.get(key)?.reactedUsers.push(user)
         }

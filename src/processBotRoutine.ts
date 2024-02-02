@@ -27,7 +27,7 @@ export async function processBotRoutine() {
         // if (messageEvent.subtype !== undefined && messageEvent.subtype === "message_changed") return;
         if (messageEvent.subtype === "bot_message") return;
         // if (messageEvent.channel !== config.targetChannel) return;
-         console.log(messageEvent)
+        // console.log(messageEvent)
         // channelGacha.postChannelInfoRandom(config.targetChannel);
     });
 
