@@ -17,19 +17,32 @@ export default class SlackActionWrapper {
     }
 
     public async postMessage(text: string) {
-        await this.postMessageAt(text, this.config.targetChannel);
+        return await this.postMessageAt(text, this.config.targetChannel);
     }
 
     public async postMessageAt(text: string, channel: string) {
-        const res = await this.app.client.chat.postMessage({
+        const result = await this.app.client.chat.postMessage({
             token: this.config.botToken,
             channel: channel,
             text: text,
         })
 
-        if (!res.ok) console.error(res)
+        if (!result.ok) console.error(result)
 
-        return res;
+        return result;
+    }
+
+    public async postReply(text: string, threadTs: string) {
+        const result = await this.app.client.chat.postMessage({
+            token: this.config.botToken,
+            channel: this.config.targetChannel,
+            text: text,
+            thread_ts: threadTs
+        })
+
+        if (!result.ok) console.error(result)
+
+        return result;
     }
 
     public async updateMessage(timeStamp: string, text: string) {

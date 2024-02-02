@@ -6,7 +6,7 @@ import log4js from "log4js";
 interface ItemData {
     ts: string,
     channel: string,
-    reactedUsers: string[]
+    reactedUsers: string[],
 }
 
 export class HighlightAdministrator {
@@ -18,8 +18,10 @@ export class HighlightAdministrator {
     }
 
     public async startProcess() {
+        await sleepSeconds(1)
+
         while (true) {
-            await sleepSeconds(10)
+            await sleepSeconds(60)
 
             // メッセージ送信
             await this.postHighlight();
@@ -37,11 +39,23 @@ export class HighlightAdministrator {
         // チャンネル情報取得
         const channelList = await this.slackAction.fetchAllChannels()
 
-        for (let i = 0; i < 10; ++i) {
+        // 投稿
+        let threadId: string | undefined = undefined
+        const maxPost = 10
+        for (let i = 0; i < maxPost; ++i) {
             if (i >= ranking.length) break
             const channel = channelList.find(c => c.id == ranking[i][1].channel)
             if (channel === undefined) continue
-            await this.slackAction.postMessage(`<https://kmc-jp.slack.com/archives/${ranking[i][0]}|#${channel.name}>`)
+
+            const message = `<https://kmc-jp.slack.com/archives/${ranking[i][0]}|#${channel.name}>`
+            if (threadId !== undefined) {
+                // スレッド内
+                await this.slackAction.postReply(message, threadId)
+            } else {
+                // トップ
+                let result = await this.slackAction.postMessage(message)
+                threadId = result.ts
+            }
         }
 
         this.currentData.clear()
