@@ -26,7 +26,6 @@ export class HighlightAdministrator {
             const now = new Date();
             if (now.getDay() !== lastPostDailyChannelDay && now.getHours() === config.dailyPostHour) {
                 // 日付が変わって特定の時間になったらメッセージ送信
-                await this.slackAction.postMessage("おはようございます :tada: 昨日のハイライトはこれ :point_down:");
                 await this.postHighlight();
                 lastPostDailyChannelDay = now.getDay();
             }
@@ -58,7 +57,8 @@ export class HighlightAdministrator {
                 await this.slackAction.postReply(message, threadId)
             } else {
                 // トップ
-                let result = await this.slackAction.postMessage(message)
+                let result = await this.slackAction.postMessage(
+                    "おはようございます :tada: 昨日のハイライトはこれ :point_down:\n" + message)
                 threadId = result.ts
             }
         }
