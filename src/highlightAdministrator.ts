@@ -2,6 +2,7 @@ import SlackActionWrapper from "./slackActionWrapper";
 import {ReactionAddedEvent} from "@slack/bolt";
 import {sleepSeconds} from "./util";
 import log4js from "log4js";
+import config from "./config.json"
 
 interface ItemData {
     ts: string,
@@ -18,13 +19,17 @@ export class HighlightAdministrator {
     }
 
     public async startProcess() {
-        await sleepSeconds(1)
-
+        let lastPostDailyChannelDay = -1;
         while (true) {
             await sleepSeconds(60)
 
-            // メッセージ送信
-            await this.postHighlight();
+            const now = new Date();
+            if (now.getDay() !== lastPostDailyChannelDay && now.getHours() === config.dailyPostHour) {
+                // 日付が変わって特定の時間になったらメッセージ送信
+                await this.slackAction.postMessage("おはようございます :tada: 昨日のハイライトはこれ :point_down:");
+                await this.postHighlight();
+                lastPostDailyChannelDay = now.getDay();
+            }
         }
     }
 
