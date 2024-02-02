@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "./node_modules/.bin/ts-node src/main.ts"
+    "run": "ts-node src/main.ts"
   },
   "dependencies": {
     "@slack/bolt": "^3.12.2",
