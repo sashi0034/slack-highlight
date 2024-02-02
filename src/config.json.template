@@ -1,0 +1,8 @@
+{
+    "botToken": "xoxb-id",
+    "appToken": "xapp-id",
+    "targetChannel": "CHANNELID",
+    "dailyPostHour": 6,
+    "botName": "highlight-administrator",
+    "debug": false
+}
