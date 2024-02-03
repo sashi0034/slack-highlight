@@ -50,10 +50,12 @@ export class HighlightAdministrator {
     private async postHighlight() {
         if (this.currentData.size === 0) return
 
-        // ソート
         log4js.getLogger().info(`Start sort ${this.currentData.size} messages`)
+        console.log(this.currentData)
+
+        // ソート
         const ranking: [string, ItemData][] = Array.from(this.currentData.entries());
-        ranking.sort((a, b) => a[1].reactedUsers.length - b[1].reactedUsers.length)
+        ranking.sort((a, b) => b[1].reactedUsers.length - a[1].reactedUsers.length)
 
         // チャンネル情報取得
         const channelList = await this.slackAction.fetchAllChannels()
