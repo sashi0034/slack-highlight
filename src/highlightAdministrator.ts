@@ -4,10 +4,25 @@ import {sleepSeconds} from "./util";
 import log4js from "log4js";
 import config from "./config.json"
 
+function concatEmojiList(emojis: string[]): string {
+    const counts: { [key: string]: number } = {};
+
+    emojis.forEach(str => {
+        if (counts[str]) {
+            counts[str] += 1;
+        } else {
+            counts[str] = 1;
+        }
+    });
+
+    return Object.entries(counts).map(([key, value]) => `:${key}: ${value}`).join('  ');
+}
+
 interface ItemData {
     ts: string,
     channel: string,
     reactedUsers: string[],
+    addedReactions: string[],
 }
 
 export class HighlightAdministrator {
@@ -51,7 +66,7 @@ export class HighlightAdministrator {
             const channel = channelList.find(c => c.id == ranking[i][1].channel)
             if (channel === undefined) continue
 
-            const message = `<https://kmc-jp.slack.com/archives/${ranking[i][0]}|#${channel.name}>`
+            const message = `<https://kmc-jp.slack.com/archives/${ranking[i][0]}|#${channel.name}> ${concatEmojiList(ranking[i][1].addedReactions)}`
             if (threadId !== undefined) {
                 // スレッド内
                 await this.slackAction.postReply(message, threadId)
@@ -75,11 +90,15 @@ export class HighlightAdministrator {
             this.currentData.set(key, {
                 ts: event.item.ts,
                 channel: event.item.channel,
-                reactedUsers: [user]
+                reactedUsers: [user],
+                addedReactions: [event.reaction]
             })
-        } else if (this.currentData.get(key)?.reactedUsers.indexOf(user) === -1) {
-            // 既にリアクションがついたアイテムへ新しいユーザーがリアクション
-            this.currentData.get(key)?.reactedUsers.push(user)
+        } else {
+            // 既にリアクションがついたアイテムへリアクション
+            this.currentData.get(key)?.addedReactions.push(event.reaction)
+
+            // 新しいユーザーの記憶
+            if (this.currentData.get(key)?.reactedUsers.indexOf(user) === -1) this.currentData.get(key)?.reactedUsers.push(user)
         }
 
         console.log(event)

@@ -14,7 +14,7 @@ export async function processBotRoutine() {
     });
 
     const slackAction = new SlackActionWrapper(app, config)
-    await slackAction.postMessage("Initializing...")
+    // await slackAction.postMessage("Initializing...")
 
     const highlightAdministrator = new HighlightAdministrator(slackAction);
 
@@ -35,7 +35,7 @@ export async function processBotRoutine() {
     highlightAdministrator.startProcess();
 
     log4js.getLogger().info("Bolt app is running up.");
-    await slackAction.postMessage("finish setup")
+    await slackAction.postMessage("Finished setup")
 }
 
 
